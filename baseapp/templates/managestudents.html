@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load crispy_forms_filters %}
+
+{% block title %} Manage Students {% endblock %}</title>
+
+{% block content %}
+<div class="col-md-10 border border-dark">
+    <table class="table table-bordered">
+        <thead>
+            <th>Id</th>
+            <th>Student Name</th>
+            <th>Gender</th>
+            <th>Email id</th>
+            <th>Guardian Name</th>
+            <th>Actions</th>
+        </thead>
+        {% for obj in list %}
+        <tr>
+            <td>{{obj.id}}</td>
+            <td>{{obj.student_name}}</td>
+            <td>{{obj.gender}}</td>
+            <td>{{obj.student_email_id}}</td>
+            <td>{{obj.guardian_name}}</td>
+            <td><a href="{% url 'update_student' obj.id %}"><i class="bi bi-pencil-fill"></i></a></i>
+            
+                <a href="{% url 'delete_student' obj.id %}"><i class="bi bi-trash"></i></a></td>
+
+        </tr>
+        {% endfor %}
+    </table>
+    
+    
+</div>
+
+{% endblock %}        
+   

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Student Details
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% load crispy_forms_filters %} 
+
+
+
+
+{% block content %}
+<div class="col-md-10 border border-dark">
+<div class="w-50 m-auto py-4">
+    <form action="" method="POST">
+      {%csrf_token%}
+        {{form|crispy}}
+        {{uform|crispy}}
+      <input class="btn btn-primary" type="submit" value="Register">
+    </form>
+
+  </div>
+</div>
+{% endblock %}

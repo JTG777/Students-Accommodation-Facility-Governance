@@ -1,0 +1,99 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+
+</head>
+<body class="bg-light">
+   <header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'home' %}">Student Accomodaton Facility Governance</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto ">
+              <!-- <a class="nav-link active my-auto" aria-current="page" href="{% url 'home' %}">Home</a> -->
+              <!-- <a class="nav-link my-auto " href="#">Features</a> -->
+              <a class="nav-link my-auto" href="#"><h2>Hi, {{request.user}}</h2></a>
+              <a href="{% url 'logout' %}" class="text-decoration-none my-auto">Logout</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+   
+  </header>
+
+  {% if request.user.is_staff %}
+
+  <section>
+    <div class="">
+      <div class="row">
+        <div class="col-md-2 border border-dark">
+          <div class="py-2 ">
+            <h4><a class="text-decoration-none "href="{% url 'home' %}">Dashboard</a></h4>
+
+            <h4><a class="text-decoration-none "href="{% url 'studdetails' %}">Register Student</a></h4>
+
+            <h4><a class="text-decoration-none "href="{% url 'display' %}">Manage Students</a></h4>
+
+            <h4><a class="text-decoration-none "href="{% url 'roomassign' %}">Assign Room</a></h4>
+
+
+
+          </div>
+          
+
+
+        </div>
+        
+          {% block content %}
+          
+          
+          {% endblock %}
+        
+    
+      </div>
+    </div> 
+  </section>
+
+  {% else %}
+  <section>
+    <div class="">
+      <div class="row">
+        <div class="col-md-2 border border-dark">
+          <div class="py-2 ">
+            <h4><a class="text-decoration-none "href="{% url 'home' %}">Home</a></h4>
+            <h4><a class="text-decoration-none "href="{% url 'stud_payment' %}">Payment</a></h4>
+
+            
+
+          </div>
+        </div>
+        <div class="col-md-10 border border-dark p-5  " >
+          <div class="col-md-10 border border-dark">
+            <h1>Total Payment</h1>
+            <h4>{{amount}}</h4>
+
+          </div>
+        </div>
+
+      </div>
+        
+    </div>
+  </section>
+
+  {% endif %}
+
+    
+    
+</body>
+</html>

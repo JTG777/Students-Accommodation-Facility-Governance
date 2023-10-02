@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-10 border border-dark p-5  " >
+    <div class="row">
+
+        <div class="col-md-4 ">
+            <div class="card " style="width: 18rem;">
+                <div class="text-center card-body">
+                  <h2 class="card-title">Total Students</h2>
+                  <h2 class="card-text">{{student_count}}<h2>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col-md-4">
+            <div class="card " style="width: 18rem;">
+                <div class="text-center card-body">
+                  <h2 class="card-title">Total Rooms</h2>
+                  <h2 class="card-text">{{room_count}}<h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card  " style="width: 18rem;">
+                <div class="text-center card-body">
+                    <h2 class="card-title">Total Rooms Assigned</h2>
+                    <h2 class="card-text">{{room_assigned_count}}<h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        
+        
+        
+        
+        <div class="col-md-6">
+            <div class="card" style="width: 18rem;">
+                <div class="text-center card-body">
+                    <h2 class="card-title">Available Rooms</h2>
+                    <h2 class="card-text">{{room_available}}<h2>
+                </div>
+            </div>
+        </div>
+         
+
+    </div>
+    
+
+    
+</div>
+          
+          
+{% endblock %}

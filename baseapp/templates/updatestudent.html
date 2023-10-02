@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load crispy_forms_filters %}
+
+{% block title %} Manage Students {% endblock %}</title>
+
+{% block content %}
+<div class="col-md-10 border border-dark">
+    <div class="w-50 m-auto py-4">
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input  class="btn btn-primary" type="submit" value="Update">
+    </form>
+</div>
+    
+    
+</div>
+
+{% endblock %}
