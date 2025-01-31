@@ -23,4 +23,36 @@ Student Details
 
   </div>
 </div>
+
+<script>
+  $(document).ready(function() {
+      // Function to filter trainers based on selected branch and course
+      function filterTrainers() {
+          var branchId = $("select[name='oneteam_branch_name']").val();  // Get selected branch ID
+          var courseId = $("select[name='course_name']").val();  // Get selected course ID
+
+          // Perform AJAX request to get filtered trainers
+          $.ajax({
+              url: "{% url 'get_trainers' %}",  // The URL to filter trainers
+              data: { 
+                  'branch_id': branchId,  // Send branch ID
+                  'course_id': courseId    // Send course ID
+              },
+              success: function(data) {
+                  // Clear the trainer dropdown before adding new options
+                  $("select[name='trainer']").empty();
+                  
+                  // Add each trainer from the filtered data
+                  $.each(data.trainers, function(index, trainer) {
+                      $("select[name='trainer']").append('<option value="'+trainer.id+'">'+trainer.trainer_name+'</option>');
+                  });
+              }
+          });
+      }
+
+      // Trigger the filtering function when branch or course is changed
+      $("select[name='oneteam_branch_name']").change(filterTrainers);
+      $("select[name='course_name']").change(filterTrainers);
+  });
+</script>
 {% endblock %}

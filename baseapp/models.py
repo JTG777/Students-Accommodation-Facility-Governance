@@ -20,17 +20,24 @@ class OneteamBranch(Master):
     def __str__(self):
         return self.branch_name
 
+
+
 class Course(models.Model):
     course_name=models.CharField(max_length=40)
+    
 
     def __str__(self):
         return self.course_name
 
 class Trainer(models.Model):
     trainer_name=models.CharField(max_length=40)
+    course=models.ForeignKey(Course,on_delete=models.CASCADE)
+    branch=models.ForeignKey(OneteamBranch,on_delete=models.CASCADE)
+    
 
     def __str__(self):
-        return self.trainer_name
+        return f"{self.trainer_name} teach {self.course.course_name}"
+    
 
 
 
@@ -45,9 +52,9 @@ class Student(models.Model):
     gender=models.CharField(max_length=6,choices=GENDER,default=None)
     guardian_name=models.CharField(max_length=40)
     guardian_no=models.BigIntegerField(unique=True)
-    trainer_name=models.ForeignKey(Trainer,on_delete=models.CASCADE)
     course_name=models.ForeignKey(Course,on_delete=models.CASCADE)
     oneteam_branch_name=models.ForeignKey(OneteamBranch,on_delete=models.CASCADE, limit_choices_to={"isactive":True})
+    trainer=models.ForeignKey(Trainer,on_delete=models.CASCADE)
     user=models.OneToOneField(User,on_delete=models.CASCADE,default=None)
     
 

@@ -1,4 +1,4 @@
-from .models import Student
+from .models import Student,OneteamBranch,Course,Trainer
 from django import forms
 from .models import RoomAssign
 from .models import Room
@@ -14,6 +14,14 @@ class StudentregisterForm(forms.ModelForm):
             'gender': forms.RadioSelect(),
             'student_dob': forms.DateInput(attrs={'format': 'yyyy-mm-dd','type':'date'}),
 }
+
+    def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # Preload all branches and courses in the dropdown
+            self.fields['oneteam_branch_name'].queryset = OneteamBranch.objects.all()
+            self.fields['course_name'].queryset = Course.objects.all()
+            self.fields['trainer'].queryset = Trainer.objects.all()        
+
 
 class RoomAssignForm(forms.ModelForm):
     class Meta:

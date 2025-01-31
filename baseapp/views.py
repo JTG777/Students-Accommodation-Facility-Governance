@@ -1,9 +1,11 @@
 from django.shortcuts import render,redirect
 from .forms import StudentregisterForm
 from .forms import RoomAssignForm,Userform
-from .models import Student,Room,RoomAssign
+from .models import Student,Room,RoomAssign,Trainer
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+
 # Create your views here.
 
 @login_required()
@@ -113,3 +115,15 @@ def view_student_payment(request):
     # context['amount']=amount
     print(amount)
     return render(request,'base.html',{'amount':amount})
+
+
+def get_trainers(request):
+    # Get branch_id and course_id from the AJAX request
+    branch_id = request.GET.get('branch_id')
+    course_id = request.GET.get('course_id')
+    
+    # Filter trainers by both branch and course
+    trainers = Trainer.objects.filter(branch_id=branch_id, course_id=course_id).values('id', 'trainer_name')
+
+    # Return the filtered list of trainers as a JSON response
+    return JsonResponse({'trainers': list(trainers)})
