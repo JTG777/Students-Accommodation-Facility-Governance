@@ -1,15 +1,23 @@
 from .models import Student,OneteamBranch,Course,Trainer
 from django import forms
-from .models import RoomAssign
-from .models import Room
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 
-class StudentregisterForm(forms.ModelForm):
+
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
+
+class StudentRegisterForm(forms.ModelForm):
+    username=forms.CharField(max_length=50)
+    password1=forms.CharField(widget=forms.PasswordInput,label='Password')
+    password2=forms.CharField(widget=forms.PasswordInput,label='Confirm Password')
+
+    email=forms.EmailField(label='Student Email')
+
     class Meta:
         model=Student
         # fields='__all__'
-        exclude=['user']
+        fields=[f.name for f in Student._meta.fields if f.name not in ['user','date_added','updated_at']]+['email','username','password1','password2',]
+        labels={'student_dob':'Date of Birth','guardian_no':'Guardian Mobile no.',}
         widgets = {
             'gender': forms.RadioSelect(),
             'student_dob': forms.DateInput(attrs={'format': 'yyyy-mm-dd','type':'date'}),
@@ -20,33 +28,39 @@ class StudentregisterForm(forms.ModelForm):
             # Preload all branches and courses in the dropdown
             self.fields['oneteam_branch_name'].queryset = OneteamBranch.objects.all()
             self.fields['course_name'].queryset = Course.objects.all()
-            self.fields['trainer'].queryset = Trainer.objects.all()        
+            self.fields['trainer'].queryset = Trainer.objects.all()   
+
+    def clean(self):
+        cleaned_data=super().clean()
+        password1=cleaned_data['password1']
+        password2=cleaned_data['password2']
+        mobile_no=cleaned_data['student_no']
+        if len(str(mobile_no))<10:
+             raise forms.ValidationError("Mobile No needs to be 10 digit")
+        
+        if password1!=password2:
+            raise ValidationError("Passwords do not match")
+        return cleaned_data
 
 
-class RoomAssignForm(forms.ModelForm):
-    class Meta:
-        model=RoomAssign
-        exclude=['total_payment']
+    
+        
 
-        widgets = {
-            'room_assigned_date': forms.DateInput(attrs={'format': 'yyyy-mm-dd','type':'date'}),
-            
-        }
+    def save(self,commit=True):
+        user=User.objects.create_user(
+              username=self.cleaned_data['username'],
+              password=self.cleaned_data['password1'],
+              
+              email=self.cleaned_data['email'],
+              )
+        
+        student=super().save(commit=False)
+        student.user=user
 
-    def __init__(self, *args, **kwargs):
-        super(RoomAssignForm, self).__init__(*args, **kwargs)
-
-        # Filter available rooms and students
-        assigned_rooms = RoomAssign.objects.all().values_list('room', flat=True)
-        assigned_students = RoomAssign.objects.all().values_list('student', flat=True)
-
-        self.fields['room'].queryset = Room.objects.exclude(pk__in=assigned_rooms)
-        self.fields['student'].queryset = Student.objects.exclude(pk__in=assigned_students)
-
-class Userform(UserCreationForm):
-    class meta:
-        model=User
-        fields=['username','password1','password2']
+        if commit:
+            student.save()
+            user.save()
+        return student
 
 
 

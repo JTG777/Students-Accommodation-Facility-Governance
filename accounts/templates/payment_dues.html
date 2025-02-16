@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+
+
+{% load custom_filter_dues %}
+
+{% block content %}
+<div class="col-md-10 col-sm-12 border border-dark">
+    <table class="table table-bordered">
+        <thead>
+            <th>Room no.</th>
+            <th>Food Charge</th>
+            <th>Room Charge</th>
+            <th>Fees Type</th>
+            
+            <th>Amount to Pay </th>
+            
+            
+            
+            <th>Hostel Duration</th>
+            <th>Due Date</th>
+            <th>Pending Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+
+        </thead>
+        <tbody>
+            {% if onetime_payment_dues %}
+        {% for due in onetime_payment_dues %}
+        <tr>
+            <td>{{due.room_assigned.room.room_no}}</td>
+            <td>Rs. {{due.food_charge}}</td>
+            <td>Rs. {{due.room_assigned.room.room_fee.fee_per_person|multiply:due.room_assigned.Duration}}</td>
+            <td>{{due.fees_type}}</td>
+            <td>Rs. {{due.total_payment}}</td>
+           
+            <td>{{due.room_assigned.Duration}}</td>
+            <td>{{due.next_due_date|date:'d M, Y'|default:"N/A"}}</td>
+            <td>{{due.pending_amount}}</td>
+            {% if due.is_paid %}
+
+            <td>Paid</td>
+            {% else %}
+            <td>Not Paid</td>
+            {% endif %}
+            <td>
+                <!-- <a class="btn btn-primary" href="{% url 'payment:create_razorpay_order' due.id 'ONETIME' %}">Pay Now</a> -->
+                <button class="btn btn-primary pay-now-btn" data-payment-id="{{due.id}}" data-payment-type="ONETIME">Pay Now</button>
+            </td>
+            
+                
+
+        </tr>
+        {% endfor %}
+        
+
+        {% elif recurring_payment_dues %}
+        {% for due in recurring_payment_dues %}
+        <tr>
+            <td>{{due.payment.room_assigned.room.room_no}}</td>
+            <td>Rs. {{due.payment.food_charge|divide:due.payment.room_assigned.Duration}}</td>
+            <td>Rs. {{due.payment.room_assigned.room.room_fee.fee_per_person}}</td>
+            <td>{{due.payment.fees_type}}</td>
+            <td>Rs. {{due.amount_due}}</td>
+            
+            <td>{{due.payment.room_assigned.Duration}} Months</td>
+            <td>{{due.due_date|date:'d M, Y'|default:"N/A"}}</td>
+            <td>Rs.{{due.payment.pending_amount}}</td>
+            
+            <!-- <td>{{due.pending_amount}}</td> -->
+            {% if due.is_paid %}
+
+            <td>Paid</td>
+            {% else %}
+            <td>Not Paid</td>
+            {% endif %}
+            <td>
+                <button class="btn btn-primary pay-now-btn" data-payment-id="{{due.id}}" data-payment-type="RECURRING">Pay Now</button>
+                <!-- <a class="btn btn-primary" href="{% url 'payment:create_razorpay_order' due.id 'RECURRING' %}">Pay Now</a> -->
+            </td>
+            
+                
+
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr><td>
+            <p>No pending Payments</p>
+        </td>
+            
+        </tr>
+        
+        {% endif %}
+
+
+        </tbody>
+        
+
+
+    </table>
+    
+    
+</div>
+
+<script>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    console.log('CSRF Token:', csrfToken); 
+
+    document.addEventListener('DOMContentLoaded',function(){
+        document.querySelectorAll(".pay-now-btn").forEach(button => {
+            button.addEventListener("click",function(){
+                let paymentId=this.getAttribute('data-payment-id');
+                let paymentType=this.getAttribute('data-payment-type');
+
+                fetch(`/payments/create-order/${paymentId}/${paymentType}/`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    if (data.status === "success") {
+                        let options = {
+                            "key": data.key,  // Razorpay Key
+                            "amount": data.amount * 100,  // Amount in paisa
+                            "currency": "INR",
+                            "name": "Hostel Payment",
+                            "description": "Pay your hostel fees",
+                            "order_id": data.order_id,  // Razorpay Order ID
+                            "handler": function (response) {
+                                verifyPayment(response, paymentId, paymentType);
+                            }
+                        };
+                        let rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    } else {
+                        alert("Error creating order!");
+                    }
+                });
+            });
+        });
+    });
+
+    function verifyPayment(response, paymentId, paymentType) {
+        
+        fetch("/payments/verify-payment/", {
+            method: "POST",
+
+            headers: { "Content-Type": "application/json",'X-CSRFToken': csrfToken,},
+            body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                payment_id: paymentId,
+                payment_type: paymentType
+            })
+        })
+        .then(response => response.json())
+        .then(data =>{
+            if(data.status==='success'){
+                alert(data.message);
+                window.location.href=data.redirect_url;
+            }else{
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred while verifying the payment.");
+        });
+
+    }
+    
+
+</script>
+          
+          
+{% endblock %}

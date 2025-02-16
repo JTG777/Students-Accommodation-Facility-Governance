@@ -15,10 +15,12 @@ Student Details
 <div class="col-md-10 border border-dark">
 <div class="w-50 m-auto py-4">
     <form action="" method="POST">
+      
       {%csrf_token%}
-        {{form|crispy}}
-        {{uform|crispy}}
+      {{form|crispy}}
+        
       <input class="btn btn-primary" type="submit" value="Register">
+     
     </form>
 
   </div>

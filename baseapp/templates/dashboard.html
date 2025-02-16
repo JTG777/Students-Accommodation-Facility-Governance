@@ -6,9 +6,21 @@ Dashboard
 
 {% block content %}
 
-<div class="col-md-10 border border-dark p-5  " >
-    <div class="row">
 
+<div class="col-md-10 border border-dark p-5  " >
+    
+        {% if messages %}
+
+{% for message in messages %}
+<div class="alert alert-{{message.tags}}" role="alert">
+    {{message}}
+  </div>
+
+{% endfor %}
+{% endif %}
+
+{% if user.is_staff %}
+    <div class="row">
         <div class="col-md-4 ">
             <div class="card " style="width: 18rem;">
                 <div class="text-center card-body">
@@ -51,6 +63,60 @@ Dashboard
          
 
     </div>
+
+    {% else %}
+    <div class="col-md-8">
+        <!-- Profile Card -->
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center">
+                <h2>{{ user.student.student_name }}'s Profile</h2>
+            </div>
+            <div class="card-body">
+                <!-- Profile Picture -->
+                {% if profile.profile_picture %}
+                <div class="text-center mb-4">
+                    <img src="{{profile.profile_picture.url}}" style="width: 150px; height: 150px; object-fit: cover;" class="rounded-circle" alt="Profile Picture" width="150">
+                </div>
+                {% else %}
+                <div class="text-center mb-4">
+                    <img src="/media/profile_pics/no_image.jpg" style="width: 150px; height: 150px; object-fit: cover;" class="rounded-circle" alt="Profile Picture" width="150">
+                </div>
+    
+                {% endif %}
+                <div class="mb-3">
+                    <h5>Name : {{user.student.student_name}}</h5>
+                    <h5>Mobile No: {{user.student.student_no}}</h5>
+
+                    <h5 class="d-inline ">Date of Birth : </h5> <span>{{user.student.student_dob}}</span>
+    
+                </div>
+                
+                <!-- Bio Section -->
+                <h4 class="mb-3">Bio</h4>
+                <hr>
+                <p>{{ user.profile.bio|default:"No bio provided." }}</p>
+                
+                <!-- Links (Edit Profile, etc.) -->
+                <div class="mt-4 text-center">
+                    <a href="" class="btn btn-warning">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+
+    <!-- <div class="col-md-10 border border-dark p-5  " >
+        <div class="col-md-10 border border-dark">
+          <h1>Total Payment</h1>
+          <h4>{{amount}}</h4>
+
+        </div>
+    </div> -->
+
+    {% endif %}
+
+
     
 
     

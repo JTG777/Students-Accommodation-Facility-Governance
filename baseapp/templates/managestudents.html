@@ -22,7 +22,7 @@
             <td>{{obj.id}}</td>
             <td>{{obj.student_name}}</td>
             <td>{{obj.gender}}</td>
-            <td>{{obj.student_email_id}}</td>
+            <td>{{obj.user.email}}</td>
             <td>{{obj.guardian_name}}</td>
             <td><a href="{% url 'update_student' obj.id %}"><i class="bi bi-pencil-fill"></i></a></i>
             

@@ -1,0 +1,36 @@
+{% if user.is_staff %}
+
+<div class="col-md-2 border border-dark">
+    <div class="py-2 ">
+      <h4><a class="text-decoration-none "href="{% url 'home' %}">Dashboard</a></h4>
+
+      <h4><a class="text-decoration-none "href="{% url 'student_register' %}">Register Student</a></h4>
+
+      <h4><a class="text-decoration-none "href="{% url 'display' %}">Manage Students</a></h4>
+
+      <h4><a class="text-decoration-none "href="{% url 'roomassign' %}">Assign Room</a></h4>
+
+      <h4><a class="text-decoration-none "href="{% url 'manage_roomassign' %}">Manage Room Assign</a></h4>
+
+
+
+
+    </div>
+    
+
+
+  </div>
+
+{% else %}
+
+<div class="col-md-2 border border-dark">
+    <div class="py-2 ">
+      <h4><a class="text-decoration-none" href="{% url 'home' %}">Profile</a></h4>
+      <h4><a class="text-decoration-none" href="{% url 'payment_dues' %}">Payment Due</a></h4>
+
+      
+
+    </div>
+  </div>
+
+{% endif %}

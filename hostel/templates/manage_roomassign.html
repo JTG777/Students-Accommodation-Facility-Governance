@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_filters %}
+
+{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+<div class="col-md-10 border border-dark">
+    <table class="table table-bordered">
+        <thead>
+            <th>Assigned Room</th>
+            <th>Student</th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
+            {% for assigned_room in assigned_rooms %}
+            <tr>
+                
+                <td>
+                    {{assigned_room.room.room_no}}
+
+                </td>
+                <td>
+                    {{assigned_room.student}}
+
+                </td>
+                <td>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <a href="{% url 'delete_room_assign' assigned_room.id %}"><i class="bi bi-trash"></i></a>
+                    </form>
+                    
+                </td>
+                
+
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% endblock %}
+

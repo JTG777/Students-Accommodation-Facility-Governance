@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+from decouple import config
 
 from pathlib import Path
 import os
@@ -21,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y9g%(le5op#cm#pp)93s-zk)k50t7x2ylx0q@ue8fsu4)6$x7l'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG',cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -42,6 +43,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'accounts',
+    'hostel',
+    'payment',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +133,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS=[
+    os.path.join(BASE_DIR,'static')
+]
+
+
+MEDIA_URL='media/'
+
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -140,3 +153,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 LOGIN_REDIRECT_URL='home'
 LOGOUT_REDIRECT_URL='login'
+
+RAZORPAY_KEY_ID=config('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET=config('RAZORPAY_KEY_SECRET')

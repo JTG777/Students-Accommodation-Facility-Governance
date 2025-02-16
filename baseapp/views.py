@@ -1,15 +1,17 @@
 from django.shortcuts import render,redirect
-from .forms import StudentregisterForm
-from .forms import RoomAssignForm,Userform
-from .models import Student,Room,RoomAssign,Trainer
+from .forms import StudentRegisterForm
+from .models import Student,Trainer
+from hostel.models import Room,RoomAssign
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from django.contrib import messages
 
 # Create your views here.
 
 @login_required()
 def home(request):
+    
     context={}
     student_count=Student.objects.all().count()
     room_count=Room.objects.all().count()
@@ -23,63 +25,30 @@ def home(request):
     return render(request,'dashboard.html',context)
 
 
-def studentdetails(request):
+def student_register(request):
     if request.method=="POST":
-        form=StudentregisterForm(request.POST)
-        uform=Userform(request.POST)
+        form=StudentRegisterForm(request.POST)
         
-        if form.is_valid() and uform.is_valid():
-            uname=uform.cleaned_data.get('username')
-            pwd=uform.cleaned_data.get('password1')
-            new_user=User.objects.create_user(username=uname,password=pwd)
-            new_user.save()
-            student=form.save(commit=False)
-            student.user=new_user
-            student.save()
+        
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Form has been submitted successfully")
+            
             return redirect('home')
+        
+
+    else:
+        form=StudentRegisterForm()        
             
     
     
-    form=StudentregisterForm()
-    uform=Userform()
-    context={'form':form,'uform':uform}
-    return render(request,'studentdetails.html',context)
+    
+    context={'form':form,}
+    return render(request,'student_register.html',context)
     
 
 
-def roomassign(request):
-    if request.method=='POST':
-        form=RoomAssignForm(request.POST)
-        if form.is_valid():
-            months=form.cleaned_data.get('Duration')
-            fees_obj=form.cleaned_data.get('fees_type')
-            if fees_obj.fees_type=='One Time Payment':
-                if form.cleaned_data.get('food_required')==True:
-                    room=form.save(commit=False)
-                    room.total_payment=months*2000+(months*4000)
-                    room.save()
-                    return redirect('home')
-                else:
-                    room=form.save(commit=False)
-                    room.total_payment=months*4000
-                    room.save()
-                    return redirect('home')
-            else:
-                if form.cleaned_data.get('food_required')==True:
-                    room=form.save(commit=False)
-                    room.total_payment=months*2000+(months*4000)
-                    room.save()
-                    return redirect('home')
-                else:
-                    room=form.save(commit=False)
-                    room.total_payment=months*4000
-                    room.save()
-                    return redirect('home')     
 
-
-    else: 
-        form=RoomAssignForm()
-        return render(request,'roomassign.html',{'form':form})
 
 
 def displaystudent(request):
@@ -89,14 +58,16 @@ def displaystudent(request):
 def updatestudent(request,pk):
     studentobj=Student.objects.get(id=pk)
     if request.method=="POST":
-        form=StudentregisterForm(request.POST)
+        form=StudentRegisterForm(request.POST)
         if form.is_valid():
             form.save()
             
             return redirect('/')
             
-    
-    form=StudentregisterForm(instance=studentobj)
+    username=studentobj.user.username
+    email=studentobj.user.email
+
+    form=StudentRegisterForm(instance=studentobj,initial={'username':username,'email':email,})
     return render(request,'updatestudent.html',{'form':form})
 
 
@@ -106,15 +77,7 @@ def deletestudent(request,pk):
     return redirect('display')
 
 
-def view_student_payment(request):
-    context=[]
-    student=Student.objects.get(user=request.user)
-    
-    room=RoomAssign.objects.get(student=student.id)
-    amount=room.total_payment
-    # context['amount']=amount
-    print(amount)
-    return render(request,'base.html',{'amount':amount})
+
 
 
 def get_trainers(request):
